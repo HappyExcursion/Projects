@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 
 # Function to read and parse the HTML of a local file
 
-
 def read_and_parse_file(file_path):
     with open(file_path, 'r') as file:
         contents = file.read()
@@ -57,7 +56,7 @@ data_list = []
 for title, link, num in zip(Titles, Links, Nums):
     # Initialize an empty comments list
     comments = [
-        {"James ": "", "Xavier": "", "Chelsey ": "", "Ryan": ""}
+        {"James": "", "Xavier": "", "Chelsey": "", "Ryan": ""}
     ]
 
     data_dict = {"Num": num, "Title": title, "Link": link, "Location": "", "Summary": "", "Preference": "",
@@ -70,20 +69,22 @@ with open("projects.json", "w") as file:
 
 
 # create a YAML version
-# Create a list to hold the dictionaries
-data_list = []
-
-# Loop through the titles and links and create a dictionary for each pair
-for title, link, num in zip(Titles, Links, Nums):
-    # Initialize an empty comments list
-    comments = [
-        {"Attribute1": "", "Attribute2": "", "Attribute3": "", "Attribute4": ""}
-    ]
-
-    data_dict = {"Num": num, "Title": title,
-                 "Link": link, "Comments": comments}
-    data_list.append(data_dict)
-
 # Write the list of dictionaries to a YAML file
 with open("projects.yaml", "w") as file:
     yaml.dump(data_list, file)
+
+
+# Export to Markdown
+with open("projects.md", "w") as file:
+    for data_dict in data_list:
+        # Convert comments to a markdown list
+        comments = '\n'.join([f"- **{key}**: {value}" for comment in data_dict["Comments"] for key, value in comment.items()])
+
+        # Write each project as a section
+        file.write(f"# Project {data_dict['Num']}, {data_dict['Title']}\n")
+        file.write(f"Location: {data_dict['Location']}\n\n")
+        file.write(f"URL: [{data_dict['Link']}]({data_dict['Link']})\n")
+        file.write(f"## Summary\n{data_dict['Summary']}\n")
+        file.write(f"## Preference\n{data_dict['Preference']}\n")
+        file.write(f"## Comments\n{comments}\n\n")
+
